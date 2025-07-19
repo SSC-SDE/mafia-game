@@ -9,6 +9,32 @@ import DayActions from "./components/DayActions";
 import GameOver from "./components/GameOver";
 import RoleDisplay from "./components/RoleDisplay";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
+/**
+ * The main application component. This component renders the menu, create room, join room,
+ * lobby, and game components depending on the current step.
+ *
+ * The component also handles the logic for creating a room, joining a room, voting to start,
+ * performing night actions, and performing day actions.
+ *
+ * The component uses the following state variables:
+ * - step: the current step of the application (menu, create, join, lobby, game)
+ * - roomId: the ID of the current room
+ * - playerName: the name of the current player
+ * - minPlayers: the minimum number of players required to start the game
+ * - maxPlayers: the maximum number of players allowed in the game
+ * - players: the list of players in the current room
+ * - votes: the votes to start the game
+ * - started: whether the game has started
+ * - vote: the player's vote to start the game
+ * - error: any error messages
+ * - phase: the current phase of the game (waiting, night, day, ended)
+ * - role: the player's role
+ * - alive: the list of alive players
+ * - lastResult: the result of the last action
+ * - winner: the winner of the game
+ */
 function App() {
   const [step, setStep] = useState("menu");
   const [roomId, setRoomId] = useState("");
@@ -32,7 +58,7 @@ function App() {
   const handleCreateRoom = async (e) => {
     e.preventDefault();
     setError("");
-    const res = await fetch("http://localhost:5000/api/create_room", {
+    const res = await fetch(`${API_URL}/api/create_room`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -53,7 +79,7 @@ function App() {
   const handleJoinRoom = async (e) => {
     e.preventDefault();
     setError("");
-    const res = await fetch("http://localhost:5000/api/join_room", {
+    const res = await fetch(`${API_URL}/api/join_room`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ room_id: roomId, player_name: playerName }),
@@ -70,7 +96,7 @@ function App() {
   // Fetch room status (with playerName)
   const fetchRoomStatus = async (id) => {
     const res = await fetch(
-      `http://localhost:5000/api/room_status?room_id=${id}&player_name=${playerName}`
+      `${API_URL}/api/room_status?room_id=${id}&player_name=${playerName}`
     );
     const data = await res.json();
     if (!data.error) {
@@ -88,7 +114,7 @@ function App() {
   // Vote to start
   const handleVote = async (v) => {
     setVote(v);
-    const res = await fetch("http://localhost:5000/api/vote_start", {
+    const res = await fetch(`${API_URL}/api/vote_start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -105,7 +131,7 @@ function App() {
   // Night action
   const handleNightAction = async () => {
     if (!nightTarget) return;
-    await fetch("http://localhost:5000/api/night_action", {
+    await fetch(`${API_URL}/api/night_action`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -120,7 +146,7 @@ function App() {
   // Day vote
   const handleDayVote = async () => {
     if (!dayTarget) return;
-    await fetch("http://localhost:5000/api/day_vote", {
+    await fetch(`${API_URL}/api/day_vote`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

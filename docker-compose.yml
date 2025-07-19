@@ -1,0 +1,17 @@
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - UPSTASH_REDIS_URL=rediss://default:AaiSAAIjcDE2NTU5MWRkYTIxMmE0NjljYTExNTQyN2ExM2NhNjNlM3AxMA@normal-moth-43154.upstash.io:6379
+      - UPSTASH_REDIS_TOKEN=AqiSAAIgcDFtgyiW4kVZs4LBBQNDekKan0BzM8tqYqEaWLYVWP00Zw
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
